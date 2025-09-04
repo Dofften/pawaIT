@@ -1,29 +1,16 @@
 # pawaIT
 
-## Backend Setup
-
-1. Copy keys of .env.example and add real values into .env in backend root directory
-2. run `pip install -r requirements.txt`
-3. run `fastapi run`
-4. visit `http://127.0.0.1:8000/docs` to get started
-
-Of course\! Here is a more professional and user-friendly version of your README.
-
-This refined version includes a project description, prerequisites, clearer step-by-step instructions with code blocks, and information on accessing the API documentation.
-
----
-
-# pawaIT Backend ⚡
+## pawaIT - Backend Service
 
 Backend service for the pawaIT application. This project is built using Python and the high-performance **FastAPI** framework.
 
 ---
 
-## Getting Started
+### Getting Started
 
 Follow these instructions to get the backend server up and running on your local machine for development and testing purposes.
 
-### Prerequisites
+#### Prerequisites
 
 Before you begin, ensure you have the following installed:
 
@@ -32,7 +19,7 @@ Before you begin, ensure you have the following installed:
 
 It is highly recommended to use a virtual environment to manage project dependencies.
 
-### Installation & Setup
+#### Installation & Setup
 
 1.  **Clone the repository:**
 
@@ -71,7 +58,7 @@ It is highly recommended to use a virtual environment to manage project dependen
 
 ---
 
-## Running the Application
+### Running the Application
 
 Once the setup is complete, you can start the development server using fastapi.
 
@@ -83,7 +70,7 @@ The application will be running at **http://127.0.0.1:8000**.
 
 ---
 
-## API Documentation
+### API Documentation
 
 Once the server is running, you can access the interactive API documentation in your browser to test the endpoints.
 
