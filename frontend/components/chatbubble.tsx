@@ -32,7 +32,7 @@ export default function Chatbubble({
         <div
           className={`flex flex-col leading-1.5 p-4 border-gray-200 ${
             isLeft
-              ? "bg-[#31AED4] rounded-e-xl rounded-es-xl"
+              ? "bg-green-700 rounded-e-xl rounded-es-xl"
               : "bg-[#31AED4] rounded-s-xl rounded-ee-xl text-white"
           }`}
         >
