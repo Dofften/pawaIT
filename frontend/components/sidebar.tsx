@@ -30,11 +30,14 @@ export default function Sidebar() {
         const token = localStorage.getItem("access_token");
         if (!token) return;
 
-        const res = await fetch("http://localhost:8000/conversations", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/conversations`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (!res.ok) {
           console.error("Failed to fetch conversations");

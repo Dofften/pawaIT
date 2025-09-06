@@ -39,7 +39,7 @@ export default function conversation({
         if (!token) return;
 
         const res = await fetch(
-          `http://localhost:8000/messages?conversation_id=${id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/messages?conversation_id=${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

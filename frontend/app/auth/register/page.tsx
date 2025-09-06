@@ -29,7 +29,7 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8000/users", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
