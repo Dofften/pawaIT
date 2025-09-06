@@ -36,7 +36,6 @@ export default function chat() {
         <Textarea
           onMessageSent={(data) => {
             router.push(`/chat/${data.conversation_id}`);
-            router.refresh();
           }}
         />
       </div>
