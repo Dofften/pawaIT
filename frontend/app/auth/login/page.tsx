@@ -1,3 +1,6 @@
+"use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Unbounded } from "next/font/google";
 
 const unboundedSans = Unbounded({
@@ -7,6 +10,54 @@ const unboundedSans = Unbounded({
 });
 
 export default function Login() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      router.push("/chat");
+    }
+  }, [router]);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await fetch("http://localhost:8000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          username,
+          password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.detail || "Failed to login");
+      }
+
+      if (data.access_token) {
+        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("username", data.user.username);
+        router.push("/chat");
+        return;
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
   return (
     <>
       <div className="flex flex-1 h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
@@ -21,7 +72,7 @@ export default function Login() {
               Sign in
             </h2>
           </div>
-          <form action="#" method="POST" className="space-y-6">
+          <form onSubmit={handleSubmit} method="POST" className="space-y-6">
             <div>
               <div className="col-span-2">
                 <input
@@ -32,6 +83,8 @@ export default function Login() {
                   placeholder="username"
                   autoComplete="username"
                   aria-label="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="block w-full rounded-t-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:relative focus:outline-2 focus:-outline-offset-2 focus:outline-[#31AED4] sm:text-sm/6"
                 />
               </div>
@@ -41,9 +94,11 @@ export default function Login() {
                   name="password"
                   type="password"
                   required
-                  placeholder="Password"
+                  placeholder="password"
                   autoComplete="current-password"
-                  aria-label="Password"
+                  aria-label="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="block w-full rounded-b-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:relative focus:outline-2 focus:-outline-offset-2 focus:outline-[#31AED4] sm:text-sm/6"
                 />
               </div>
@@ -78,20 +133,23 @@ export default function Login() {
               </div>
             </div>
 
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+
             <div>
               <button
                 type="submit"
+                disabled={loading}
                 className="flex w-full justify-center rounded-md bg-[#31AED4] px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-[#31AED4]/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#31AED4]"
               >
-                Sign in
+                {loading ? "Logging in..." : "Log in"}
               </button>
             </div>
           </form>
           <p className="text-center text-sm/6 text-gray-500">
-            Not a member?{" "}
+            Not a registered user?{" "}
             <a
               href="/auth/register"
-              className="font-semibold text-indigo-600 hover:text-indigo-500"
+              className="font-semibold text-[#31AED4] hover:text-[#31AED4]/80"
             >
               Click here to register
             </a>

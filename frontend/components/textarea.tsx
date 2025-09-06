@@ -1,6 +1,50 @@
-export default function Textarea() {
+"use client";
+import { useState } from "react";
+
+export default function Textarea({
+  conversationId,
+  onMessageSent,
+}: {
+  conversationId?: number;
+  onMessageSent: (message: any) => void;
+}) {
+  const [content, setContent] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!content.trim()) return;
+
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    try {
+      const body: Record<string, any> = { content };
+      if (conversationId !== undefined) {
+        body.conversation_id = conversationId;
+      }
+      const res = await fetch("http://localhost:8000/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        console.error("Failed to send message");
+        return;
+      }
+
+      const data = await res.json();
+      onMessageSent(data); // update parent
+      setContent(""); // clear input
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <label htmlFor="chat" className="sr-only">
         Your prompt
       </label>
@@ -8,12 +52,14 @@ export default function Textarea() {
         <textarea
           id="chat"
           rows={1}
-          className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-[#31AED4]/80 focus:border-[#31AED4]/80"
           placeholder="Your prompt..."
         ></textarea>
         <button
           type="submit"
-          className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100"
+          className="inline-flex justify-center p-2 text-[#31AED4] rounded-full cursor-pointer hover:bg-[#31AED4]/20"
         >
           <svg
             className="w-5 h-5 rotate-90 rtl:-rotate-90"

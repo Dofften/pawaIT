@@ -1,3 +1,4 @@
+import Sidebar from "@/components/sidebar";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -5,7 +6,14 @@ export default function RootLayout({
 }>) {
   return (
     <div className="h-full">
-      <main className="h-full">{children}</main>
+      <main className="h-full">
+        <div className="flex h-screen">
+          <div className="w-1/6 flex-shrink-0">
+            <Sidebar />
+          </div>
+          {children}
+        </div>
+      </main>
     </div>
   );
 }

@@ -22,4 +22,4 @@ class ConversationCreate(BaseModel):
 
 class MessageCreate(BaseModel):
     content: str
-    conversation_id: int
+    conversation_id: Optional[int] = None
