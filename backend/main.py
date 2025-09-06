@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from database import models, database
@@ -15,6 +16,14 @@ models.Base.metadata.create_all(bind=database.engine)
 app = FastAPI(title="Assessment Challenge Backend",
               version="1.0.0",
               description="""A FastAPI backend for pawaIT Full Stack Software Engineer Assessment Challenge Backend""",)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # def get_db():
 #     db = database.SessionLocal()
@@ -57,8 +66,8 @@ def authenticate_user(identifier, password, db: Session):
     return user
 
 @app.post("/users", tags=["users"])
-def create_user(user: UserCreate, db: Session = Depends(database.get_db)):
-    new_user = models.User(username=user.username, email=user.email, password=user.password)
+def create_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
+    new_user = models.User(username=form_data.username, password=form_data.password)
     db.add(new_user)
     try:
         db.commit()
@@ -70,7 +79,7 @@ def create_user(user: UserCreate, db: Session = Depends(database.get_db)):
             detail="Username or email already exists",
         )
     token = jwt.encode({"baruapepe": new_user.email, "user_id": new_user.id}, "hiinisirirandom", algorithm="HS256")
-    return {"access_token": token, "token_type": "bearer", "new_user": new_user}
+    return {"access_token": token, "token_type": "bearer", "user": new_user}
 
 @app.post("/login", tags=["users"])
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
@@ -81,7 +90,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
             detail="Invalid email or password",
         )
     token = jwt.encode({"baruapepe": user.email, "user_id": user.id}, "hiinisirirandom", algorithm="HS256")
-    return {"access_token": token, "token_type": "bearer"}
+    return {"access_token": token, "token_type": "bearer", "user": user}
 
 
 @app.get("/users", tags=["users"])
@@ -104,8 +113,8 @@ def create_conversation(conversation: ConversationCreate, current_user: dict = D
     return new_conversation
 
 @app.get("/conversations", tags=["conversations"])
-def get_conversations(db: Session = Depends(database.get_db)):
-    return db.query(models.Conversation).all()
+def get_conversations(current_user: dict = Depends(get_current_user), db: Session = Depends(database.get_db)):
+    return db.query(models.Conversation).filter(models.Conversation.user_id == current_user["user_id"]).all()
 
 @app.post("/messages", tags=["messages"])
 def create_message(message: MessageCreate, current_user: dict = Depends(get_current_user), db: Session = Depends(database.get_db)):
@@ -156,5 +165,8 @@ def create_message(message: MessageCreate, current_user: dict = Depends(get_curr
             "model_response": model_response}
 
 @app.get("/messages", tags=["messages"])
-def get_messages(conversation_id: int, db: Session = Depends(database.get_db)):
+def get_messages(conversation_id: int, current_user: dict = Depends(get_current_user),  db: Session = Depends(database.get_db)):
+    conversation = (db.query(models.Conversation).filter(models.Conversation.id == conversation_id,models.Conversation.user_id == current_user["id"]).first())
+    if not conversation:
+        raise HTTPException(status_code=403, detail="Not authorized to access this conversation")
     return db.query(models.Message).filter(models.Message.conversation_id == conversation_id).all()
