@@ -17,9 +17,9 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Sidebar() {
+export default function Sidebar({ username }: { username?: string }) {
   return (
-    <div className="flex h-full grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-gray-200/25 px-6">
+    <div className="flex h-full grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-gray-200/95 px-6">
       <div className="flex h-16 shrink-0 items-center">
         <div
           className={`${unboundedSans.className} antialiased text-lg font-bold text-[#31AED4]`}
@@ -55,7 +55,7 @@ export default function Sidebar() {
               className="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-gray-900 hover:bg-gray-50"
             >
               <span className="sr-only">Your profile</span>
-              <span aria-hidden="true">User One</span>
+              <span aria-hidden="true">{username || "User"}</span>
             </a>
           </li>
         </ul>
