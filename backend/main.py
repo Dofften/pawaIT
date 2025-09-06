@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import desc
 from database import models, database
 from database.schemas import UserCreate, UserResponse, ConversationCreate, MessageCreate
 import jwt
@@ -114,7 +115,7 @@ def create_conversation(conversation: ConversationCreate, current_user: dict = D
 
 @app.get("/conversations", tags=["conversations"])
 def get_conversations(current_user: dict = Depends(get_current_user), db: Session = Depends(database.get_db)):
-    return db.query(models.Conversation).filter(models.Conversation.user_id == current_user["user_id"]).all()
+    return db.query(models.Conversation).filter(models.Conversation.user_id == current_user["user_id"]).order_by(desc(models.Conversation.id)).all()
 
 @app.post("/messages", tags=["messages"])
 def create_message(message: MessageCreate, current_user: dict = Depends(get_current_user), db: Session = Depends(database.get_db)):
