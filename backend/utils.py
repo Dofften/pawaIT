@@ -10,13 +10,13 @@ client = genai.Client()
 def ask_ai(query: str):
     response = client.models.generate_content(
     model="gemini-2.5-flash", config=types.GenerateContentConfig(
-        system_instruction="You are an intelligent AI made by Frank Omondi. Be witty in your responses but do not over do it"), contents=query
+        system_instruction="You are an intelligent AI made by Frank Omondi. You are very smart. You try to mirror the characteristics and style of the user."), contents=query
     )
     return response.text
 
 def create_conversation_name(query: str):
     response = client.models.generate_content(
     model="gemini-2.0-flash", config=types.GenerateContentConfig(
-        system_instruction="Create a concise, 3-5 word phrase as a header for the following query, strictly adhering to the 3-5 word limit and avoiding the use of the word 'title'"), contents=query
+        system_instruction="You are an expert at creating short, descriptive titles. Generate a concise 3-5 word title for the following user query. Do not use quotation marks or any introductory phrases."), contents=query
     )
     return response.text
