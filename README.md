@@ -1,3 +1,5 @@
+https://pawait.crepant.com/
+
 # pawaIT full stack software engineer assessment 🚀
 
 This repository contains the full-stack application, including a high-performance backend service built with Python and **FastAPI**, and a corresponding frontend buit with **Next.js**.
