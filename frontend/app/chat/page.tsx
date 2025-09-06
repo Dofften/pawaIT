@@ -94,7 +94,7 @@ export default function chat() {
           </div>
         </div>
 
-        <div className="h-24 bg-transparent flex-shrink-0 p-3 bg-white">
+        <div className="h-24 flex-shrink-0 p-3 bg-white">
           <Textarea />
         </div>
       </div>
