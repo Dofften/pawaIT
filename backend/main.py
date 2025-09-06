@@ -166,7 +166,7 @@ def create_message(message: MessageCreate, current_user: dict = Depends(get_curr
 
 @app.get("/messages", tags=["messages"])
 def get_messages(conversation_id: int, current_user: dict = Depends(get_current_user),  db: Session = Depends(database.get_db)):
-    conversation = (db.query(models.Conversation).filter(models.Conversation.id == conversation_id,models.Conversation.user_id == current_user["id"]).first())
+    conversation = (db.query(models.Conversation).filter(models.Conversation.id == conversation_id,models.Conversation.user_id == current_user["user_id"]).first())
     if not conversation:
         raise HTTPException(status_code=403, detail="Not authorized to access this conversation")
     return db.query(models.Message).filter(models.Message.conversation_id == conversation_id).all()
