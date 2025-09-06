@@ -28,7 +28,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         payload = jwt.decode(token, "hiinisirirandom", algorithms=["HS256"])
         email: str = payload.get("baruapepe")
         user_id: int = payload.get("user_id")
-        if email is None or user_id is None:
+        if user_id is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token",
@@ -56,7 +56,7 @@ def authenticate_user(identifier, password, db: Session):
         return False
     return user
 
-@app.post("/users", tags=["users"], response_model=UserResponse)
+@app.post("/users", tags=["users"])
 def create_user(user: UserCreate, db: Session = Depends(database.get_db)):
     new_user = models.User(username=user.username, email=user.email, password=user.password)
     db.add(new_user)
@@ -69,7 +69,8 @@ def create_user(user: UserCreate, db: Session = Depends(database.get_db)):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Username or email already exists",
         )
-    return new_user
+    token = jwt.encode({"baruapepe": new_user.email, "user_id": new_user.id}, "hiinisirirandom", algorithm="HS256")
+    return {"access_token": token, "token_type": "bearer", "new_user": new_user}
 
 @app.post("/login", tags=["users"])
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
