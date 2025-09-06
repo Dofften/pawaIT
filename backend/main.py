@@ -118,7 +118,10 @@ def get_conversations(current_user: dict = Depends(get_current_user), db: Sessio
 
 @app.post("/messages", tags=["messages"])
 def create_message(message: MessageCreate, current_user: dict = Depends(get_current_user), db: Session = Depends(database.get_db)):
-    conversation = db.get(models.Conversation, message.conversation_id)
+    if message.conversation_id is None:
+        conversation = None
+    else:
+        conversation = db.get(models.Conversation, message.conversation_id)
     if conversation is None:
         try:
             conversation_name = create_conversation_name(message.content)
@@ -126,7 +129,6 @@ def create_message(message: MessageCreate, current_user: dict = Depends(get_curr
             db.add(conversation)
             db.commit()
             db.refresh(conversation)
-            print(f"New conversation created: {conversation.id} | {conversation.name}")
         except Exception as e:
             db.rollback()
             print(e)
